@@ -1,47 +1,42 @@
 import flet as ft
+from views.start_page import StartPage
+
 
 def main(page: ft.Page):
+    """ App Entry Point Function """
+
     page.bgcolor = ft.colors.WHITE
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     page.fonts = {
-        "Roboto": "https://github.com/google/fonts/blob/main/apache/robotomono/RobotoMono%5Bwght%5D.ttf",
+        "Roboto Mono": "https://github.com/google/fonts/raw/main/apache/robotomono/RobotoMono%5Bwght%5D.ttf",
+        "Roboto Slab": "https://github.com/google/fonts/raw/main/apache/robotoslab/RobotoSlab%5Bwght%5D.ttf",
+        "Kanit": "https://raw.githubusercontent.com/google/fonts/master/ofl/kanit/Kanit-Bold.ttf",
     }
+    page.update()
 
-    main_text = ft.SafeArea(ft.Text("Have a good training session!".upper(),
-                                    color='#363636', size=20, weight=ft.FontWeight.BOLD, font_family="Roboto", text_align=ft.TextAlign.CENTER))
-    start_button = ft.OutlinedButton(content=ft.Text("Start".upper(),
-                                                    size=16, weight=ft.FontWeight.NORMAL, font_family="Roboto", text_align=ft.TextAlign.CENTER),
-                                     style=ft.ButtonStyle(
-                                         color={
-                                             ft.ControlState.DEFAULT: "#515151",
-                                         },
-                                         overlay_color="#cdcdcd",
-                                         shadow_color="#000000",
-                                         elevation=3,
-                                         shape=ft.RoundedRectangleBorder(5),
-                                         bgcolor="#ffffff",
-                                         padding=0
-                                     ),
-                                     width=200, height=30)
+    start_page = StartPage(page, routes={"trainings_page_route": "/trainings",
+                                     "settings_page_route": "/settings"})
+    start_page_view = start_page.get_view()
+    second_page_view = ft.View("/settings", [ft.Text("ASDASD", font_family="Roboto Mono"), ft.ElevatedButton("quit", on_click=lambda _: page.go("/"))])
+
+    def route_change(route):
+        page.views.clear()
+        page.views.append(start_page_view)
+
+        if page.route == "/settings":
+            page.views.append(second_page_view)
+        page.update()
     
-    settings_button = ft.OutlinedButton(content=ft.Text("Settings".upper(),
-                                                    size=16, weight=ft.FontWeight.NORMAL, font_family="Roboto", text_align=ft.TextAlign.CENTER),
-                                     style=ft.ButtonStyle(
-                                         color={
-                                             ft.ControlState.DEFAULT: "#515151",
-                                         },
-                                         overlay_color="#cdcdcd",
-                                         shadow_color="#000000",
-                                         elevation=3,
-                                         shape=ft.RoundedRectangleBorder(5),
-                                         bgcolor="#ffffff",
-                                         padding=0
-                                     ),
-                                     width=200, height=30)
+    def view_pop(view):
+        page.views.pop()
+        top_view = page.views[-1]
+        page.go(top_view.route)
 
-    buttons = ft.Column(controls=[start_button, settings_button], spacing=10)
-    page.add(main_text, buttons)
+    page.on_route_change = route_change
+    page.on_view_pop = view_pop
+    page.go(page.route)
+
 
 if __name__ == "__main__":
     ft.app(target=main)
