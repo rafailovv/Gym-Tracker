@@ -10,9 +10,11 @@ class StartPage:
         self.page = page
         self.routes = routes
 
-        main_text = ft.SafeArea(ft.Text("Have a good training session!".upper(),
+        main_text_container = ft.Container(ft.Text("Have a good training session!".upper(),
                                     color='#363636',
-                                    size=20, weight=ft.FontWeight.BOLD, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER))
+                                    size=20, weight=ft.FontWeight.BOLD, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER),
+                                    alignment=ft.alignment.center)
+        main_text = ft.SafeArea(main_text_container)
         
         start_button = ft.OutlinedButton(content=ft.Text("Start".upper(),
                                                         size=16, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER),
@@ -44,7 +46,7 @@ class StartPage:
         buttons = ft.Column(controls=[start_button, settings_button], spacing=10)
 
         self.start_page_view = ft.View("/", [main_text, buttons],
-                                bgcolor=ft.colors.WHITE,
+                                bgcolor="#ffffff",
                                 vertical_alignment=ft.MainAxisAlignment.CENTER, horizontal_alignment=ft.CrossAxisAlignment.CENTER)
     
 
