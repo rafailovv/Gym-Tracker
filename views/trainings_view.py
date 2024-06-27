@@ -23,25 +23,35 @@ class TrainingPage:
                                     alignment=ft.alignment.center)
         main_text = ft.SafeArea(main_text_container)
 
-        training_cards = [self._create_training_card("https://www.bgaframes.eu/cache/93/640x893-2022-Frames_Trendline_Black_60x60.jpg", f"Title {i}") for i in range(1, 5)]
-        plus_card = self._create_training_card("https://wumbo.net/symbols/plus/feature.png", "Add Training")
-        training_cards.append(plus_card)
 
         training_cards_grid = ft.GridView(
             max_extent=150,
             spacing=10,
             run_spacing=10
         )
+        
+        # See trainings structure in board or notebook
+        trainings = {}
+        if page.client_storage.contains_key("trainings"):
+            trainings = self.page.client_storage.get("trainings")
+        
+        training_cards = []
+        for training_title in trainings:
+            print(trainings[training_title]["src"])
+            training_cards.append(self._create_training_card(training_title, trainings[training_title]["src"]))
 
+        plus_card = self._create_training_card("Add Training", "https://wumbo.net/symbols/plus/feature.png")
+        training_cards.append(plus_card)
         training_cards_grid.controls = training_cards
-
+         
         self.training_page_view = ft.View("/trainings", [back_button, main_text, training_cards_grid],
                                           bgcolor="#ffffff")
     
 
-    def _create_training_card(self, src, title):
+    def _create_training_card(self, title, src):
         training_card_image = ft.Image(src=src,
-                                       width=150, height=70)
+                                       width=150, height=70,
+                                       fit=ft.ImageFit.CONTAIN)
         training_card_text = ft.Text(value=title,
                                      width=150,
                                      color="#515151",
@@ -58,7 +68,7 @@ class TrainingPage:
                                      padding=5,
                                      on_click=lambda _: self.page.go(self.page.views[-2].route))
         return training_card
-    
+
 
     def get_view(self):
         return self.training_page_view

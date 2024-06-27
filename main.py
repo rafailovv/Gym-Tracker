@@ -15,6 +15,9 @@ def main(page: ft.Page):
         "Roboto Slab": "https://github.com/google/fonts/raw/main/apache/robotoslab/RobotoSlab%5Bwght%5D.ttf",
         "Kanit": "https://raw.githubusercontent.com/google/fonts/master/ofl/kanit/Kanit-Bold.ttf",
     }
+    
+    # See trainings structure in board or notebook
+    page.client_storage.set("trainings", {"Cardio": {"src": "https://cdn.icon-icons.com/icons2/2487/PNG/512/cardio_workout_icon_150073.png"}})
     page.update()
 
     start_page = StartPage(page, routes={"trainings_page_route": "/trainings",
