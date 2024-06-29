@@ -1,7 +1,8 @@
 import flet as ft
 
 from views.start_page import StartPage
-from views.trainings_view import TrainingPage
+from views.trainings_page import TrainingPage
+from views.trainings_add_page import TrainingsAddPage
 
 def main(page: ft.Page):
     """ App Entry Point Function """
@@ -20,13 +21,14 @@ def main(page: ft.Page):
     page.client_storage.set("trainings", {"Cardio": {"src": "https://cdn.icon-icons.com/icons2/2487/PNG/512/cardio_workout_icon_150073.png"}})
     page.update()
 
-    start_page = StartPage(page, routes={"trainings_page_route": "/trainings",
-                                     "settings_page_route": "/settings"})
+    start_page = StartPage(page)
     start_page_view = start_page.get_view()
 
     training_page = TrainingPage(page)
     training_page_view = training_page.get_view()
 
+    training_add_page = TrainingsAddPage(page)
+    training_add_page_view = training_add_page.get_view()
 
     def route_change(route):
         page.views.clear()
@@ -34,6 +36,8 @@ def main(page: ft.Page):
 
         if page.route == "/trainings":
             page.views.append(training_page_view)
+        elif page.route == "/trainings/add":
+            page.views.append(training_add_page_view)
 
         page.update()
     

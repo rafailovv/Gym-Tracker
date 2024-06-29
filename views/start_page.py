@@ -5,8 +5,8 @@ class StartPage:
     """ Class For Start Page View Usage """
 
 
-    def __init__(self, page: ft.Page, routes={"trainings_page_route": "/",
-                                     "settings_page_route": "/"}):
+    def __init__(self, page: ft.Page, routes={"trainings_page_route": "/trainings",
+                                     "settings_page_route": "/settings"}):
         self.page = page
         self.routes = routes
 

@@ -5,7 +5,7 @@ class TrainingPage:
     """ Class For Training Page View Usage """
 
 
-    def __init__(self, page: ft.Page, routes={}):
+    def __init__(self, page: ft.Page, routes={"trainings_add_page_route": "/trainings/add"}):
         self.page = page
         self.routes = routes
         
@@ -37,10 +37,9 @@ class TrainingPage:
         
         training_cards = []
         for training_title in trainings:
-            print(trainings[training_title]["src"])
             training_cards.append(self._create_training_card(training_title, trainings[training_title]["src"]))
 
-        plus_card = self._create_training_card("Add Training", "https://wumbo.net/symbols/plus/feature.png")
+        plus_card = self._create_training_card("Add Training", "https://wumbo.net/symbols/plus/feature.png", plus=True)
         training_cards.append(plus_card)
         training_cards_grid.controls = training_cards
          
@@ -48,7 +47,7 @@ class TrainingPage:
                                           bgcolor="#ffffff")
     
 
-    def _create_training_card(self, title, src):
+    def _create_training_card(self, title, src, plus=False):
         training_card_image = ft.Image(src=src,
                                        width=150, height=70,
                                        fit=ft.ImageFit.CONTAIN)
@@ -66,7 +65,8 @@ class TrainingPage:
                                      alignment=ft.alignment.center,
                                      content=training_card_content,
                                      padding=5,
-                                     on_click=lambda _: self.page.go(self.page.views[-2].route))
+                                     adaptive=True,
+                                     on_click=lambda _: self.page.go(self.page.views[-2].route if not(plus) else self.routes["trainings_add_page_route"]))
         return training_card
 
 
