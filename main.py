@@ -5,6 +5,7 @@ from views.trainings_page import TrainingPage
 from views.trainings_add_page import TrainingsAddPage
 from views.trainings_session_page import TrainingsSessionPage
 
+
 def main(page: ft.Page):
     """ App Entry Point Function """
 
@@ -18,7 +19,7 @@ def main(page: ft.Page):
         "Kanit": "https://raw.githubusercontent.com/google/fonts/master/ofl/kanit/Kanit-Bold.ttf",
     }
     
-    # See trainings structure in board or notebook
+    # Training session example
     page.client_storage.set("trainings", {"Cardio": {
                                             "src": f"https://cdn.icon-icons.com/icons2/2487/PNG/512/cardio_workout_icon_150073.png",
                                             "order": ["Run", "Kettlebell Swing"],
@@ -40,7 +41,6 @@ def main(page: ft.Page):
 
     training_page = TrainingPage(page)
     training_page_view = training_page.get_view()
-
     training_add_page = TrainingsAddPage(page)
     training_add_page_view = training_add_page.get_view()
 
