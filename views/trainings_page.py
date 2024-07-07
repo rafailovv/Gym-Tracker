@@ -4,8 +4,8 @@ import flet as ft
 class TrainingPage:
     """ Class For Training Page View Usage """
 
-
-    def __init__(self, page: ft.Page, routes={"trainings_add_page_route": "/trainings/add"}):
+    def __init__(self, page: ft.Page, routes={"trainings_add_page_route": "/trainings/add",
+                                              "trainings_session_page_route": "/trainings/"}):
         self.page = page
         self.routes = routes
         
@@ -39,7 +39,7 @@ class TrainingPage:
         for training_title in trainings:
             training_cards.append(self._create_training_card(training_title, trainings[training_title]["src"]))
 
-        plus_card = self._create_training_card("Add Training", "https://wumbo.net/symbols/plus/feature.png", plus=True)
+        plus_card = self._create_training_card("Add Training", "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Plus_symbol.svg/1200px-Plus_symbol.svg.png", plus=True)
         training_cards.append(plus_card)
         training_cards_grid.controls = training_cards
          
@@ -66,9 +66,9 @@ class TrainingPage:
                                      content=training_card_content,
                                      padding=5,
                                      adaptive=True,
-                                     on_click=lambda _: self.page.go(self.page.views[-2].route if not(plus) else self.routes["trainings_add_page_route"]))
+                                     on_click=lambda _: self.page.go(f"{self.routes["trainings_session_page_route"]}{title}" if not(plus) else self.routes["trainings_add_page_route"]))
         return training_card
-
-
+    
+    
     def get_view(self):
         return self.training_page_view

@@ -3,6 +3,7 @@ import flet as ft
 from views.start_page import StartPage
 from views.trainings_page import TrainingPage
 from views.trainings_add_page import TrainingsAddPage
+from views.trainings_session_page import TrainingsSessionPage
 
 def main(page: ft.Page):
     """ App Entry Point Function """
@@ -18,7 +19,20 @@ def main(page: ft.Page):
     }
     
     # See trainings structure in board or notebook
-    page.client_storage.set("trainings", {"Cardio": {"src": "https://cdn.icon-icons.com/icons2/2487/PNG/512/cardio_workout_icon_150073.png"}})
+    page.client_storage.set("trainings", {"Cardio": {
+                                            "src": f"https://cdn.icon-icons.com/icons2/2487/PNG/512/cardio_workout_icon_150073.png",
+                                            "order": ["Run", "Kettlebell Swing"],
+                                            "sets": {
+                                                "Kettlebell Swing": {
+                                                    "set_count": 3,
+                                                    "repeat_count_per_set": 10
+                                                    }
+                                                },
+                                            "time": {
+                                                "Run": 600
+                                                }
+                                            }
+                                        })
     page.update()
 
     start_page = StartPage(page)
@@ -38,9 +52,17 @@ def main(page: ft.Page):
             page.views.append(training_page_view)
         elif page.route == "/trainings/add":
             page.views.append(training_add_page_view)
+        elif page.route.startswith("/trainings/"):
+            session_title = page.route[11:]
+            if page.client_storage.get("trainings").get(session_title, False):
+                session_data = page.client_storage.get("trainings")[session_title]
+                training_session_page = TrainingsSessionPage(page, session_title, session_data)
+                training_session_page_view = training_session_page.get_view()
+                page.views.append(training_session_page_view)
 
         page.update()
     
+
     def view_pop(view):
         page.views.pop()
         top_view = page.views[-1]
