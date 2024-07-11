@@ -41,11 +41,11 @@ class TrainingsSessionPage:
 
     def _create_exercise_item(self, title, repeats):
         exercise_item_title = ft.Text(title.capitalize(),
-                                                 color="#363636",
-                                                 size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER)
+                                      color="#363636",
+                                      size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER)
         exercise_item_repeats = ft.Text(repeats.upper(),
-                                                color="#363636",
-                                                size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER)
+                                        color="#363636",
+                                        size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER)
         
         exercise_item = ft.Container(ft.Row(controls=[exercise_item_title, exercise_item_repeats],
                                             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
