@@ -6,30 +6,87 @@ class TrainingsAddPage:
 
     def __init__(self, page: ft.Page, routes={"trainings_page_route": "/trainings"}):
         def send_data_dialog(e):
-            pass
+            try:
+                exercise_title = trainings_add_modal_exercise.controls[1].value
+                exercise_type = trainings_add_modal_type.controls[1].text
+
+                if exercise_type == variants[0]:
+                    sets_count = int(trainings_add_modal_sets.controls[1].value)
+                    reps_count = int(trainings_add_modal_reps.controls[1].value)
+                    exercise_repeats = f"{sets_count}X{reps_count}"
+                elif exercise_type == variants[1]:
+                    time = int(trainings_add_modal_time.controls[1].value) # TODO: Format (seconds) to (mm:ss)
+                    exercise_repeats = f"{time}"
+
+                if exercise_title != "":
+                    self.exercises.append((exercise_title, exercise_repeats))
+
+                    exercise_item_title = ft.Text(
+                        exercise_title.capitalize(),
+                        color="#363636",
+                        size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER)
+                    
+                    exercise_item_repeats = ft.Text(
+                        exercise_repeats.upper(),
+                        color="#363636",
+                        size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER)
+                    
+                    exercise = ft.Container(
+                        ft.Row(
+                            [exercise_item_title, exercise_item_repeats],
+                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                            vertical_alignment=ft.CrossAxisAlignment.CENTER),
+                        padding=10,
+                        border=ft.Border(top=ft.BorderSide(1, "#cdcdcd"), bottom=ft.BorderSide(1, "#cdcdcd")))
+                    
+                    trainings_exercises_list.controls.insert(-1, exercise)
+                    trainings_exercises_list.update()
+                    e.control.page.close(trainings_add_modal)
+                else:
+                    raise Exception("Title is empty")
+            except:
+                selected_type = variants[0]
+                trainings_add_modal_type.controls[1].text = selected_type
+                trainings_add_modal_exercise.controls[1].value = ""
+                trainings_add_modal_sets.visible = True
+                trainings_add_modal_reps.visible = True
+                trainings_add_modal_time.visible = False
+                error = ft.CupertinoAlertDialog(title=ft.Text("ERROR!", color="#ff0000"),
+                                                actions=[ft.CupertinoDialogAction(
+                                                    "Ok",
+                                                    on_click=lambda e: e.control.page.close(error),
+                                                )])
+                e.control.page.open(error)
 
 
         def dismiss_dialog(e):
             e.control.page.close(trainings_add_modal)
         
 
-        def modal_click(e):
+        def exercise_type_change(e):
             if e.control.text == variants[0]:
                 selected_type = variants[1]
                 trainings_add_modal_sets.visible = False
+                trainings_add_modal_sets.controls[1].value = ""
                 trainings_add_modal_reps.visible = False
+                trainings_add_modal_reps.controls[1].value = ""
                 trainings_add_modal_time.visible = True
+                trainings_add_modal_time.controls[1].value = ""
             else:
                 selected_type = variants[0]
                 trainings_add_modal_sets.visible = True
+                trainings_add_modal_sets.controls[1].value = ""
                 trainings_add_modal_reps.visible = True
+                trainings_add_modal_reps.controls[1].value = ""
                 trainings_add_modal_time.visible = False
+                trainings_add_modal_time.controls[1].value = ""
             e.control.text = selected_type
             e.page.update()
 
 
         self.page = page
         self.routes = routes
+        self.exercises = []
 
         trainings_add_confirm_button = ft.IconButton(icon=ft.icons.CHECK_CIRCLE_OUTLINE, icon_color="#515151", icon_size=25,
                                                      style=ft.ButtonStyle(
@@ -50,28 +107,55 @@ class TrainingsAddPage:
             cursor_color="#cdcdcd")
         
         trainings_add_top = ft.SafeArea(ft.Row(controls=[trainings_add_title, trainings_add_confirm_button],
-                                                  alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                                                  vertical_alignment=ft.CrossAxisAlignment.CENTER))
+                                               alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                                               vertical_alignment=ft.CrossAxisAlignment.CENTER))
 
         variants = ["Set X Reps", "Time"]
         selected_type = variants[0]
-        trainings_add_modal_content_type = ft.Row(controls=[ft.Text("Exercise type: ",
-                                                                    color="#e6e6e6",
-                                                                    size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
-                                                            ft.TextButton(
-                                                                text=selected_type,
-                                                                width=100,
-                                                                on_click=modal_click)],
-                                                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN)
+
+        trainings_add_modal_exercise = ft.Row(
+            [
+                ft.Text(
+                    "Exercise title: ".capitalize(),
+                    color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
+                ft.CupertinoTextField(
+                    width=100,
+                    text_style=ft.TextStyle(size=14, color="#e6e6e6", font_family="Roboto Mono", letter_spacing=1.5),
+                    capitalization=ft.TextCapitalization.WORDS,
+                    max_length=30, max_lines=1, text_align=ft.TextAlign.LEFT,
+                    bgcolor="#4f4e4e",
+                    border=ft.Border(ft.BorderSide(0.75, "#515151"), ft.BorderSide(0.75, "#515151"), ft.BorderSide(0.75, "#515151"), ft.BorderSide(0.75, "#515151")),
+                    focused_border_color="#363636",
+                    focused_border_width=0.75,
+                    cursor_color="#cdcdcd",)
+            ],
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            visible=True
+        )
+
+        trainings_add_modal_type = ft.Row(
+            [
+                ft.Text(
+                    "Exercise type: ".capitalize(),
+                    color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
+                ft.TextButton(
+                    text=selected_type,
+                    width=100,
+                    on_click=exercise_type_change)
+            ],
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            visible=True
+        )
         
         trainings_add_modal_sets = ft.Row(
             [
-                ft.Text("Sets: ",
-                        color="#e6e6e6",
-                        size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT)
-                ,ft.CupertinoTextField(
+                ft.Text(
+                    "Sets: ".capitalize(),
+                    color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
+                ft.CupertinoTextField(
                     width=100,
                     text_style=ft.TextStyle(size=14, color="#e6e6e6", font_family="Roboto Mono", letter_spacing=1.5),
+                    input_filter=ft.NumbersOnlyInputFilter(),
                     capitalization=ft.TextCapitalization.CHARACTERS,
                     max_length=30, max_lines=1, text_align=ft.TextAlign.LEFT,
                     bgcolor="#4f4e4e",
@@ -86,12 +170,14 @@ class TrainingsAddPage:
 
         trainings_add_modal_reps = ft.Row(
             [
-                ft.Text("Reps: ",
-                        color="#e6e6e6",
-                        size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT)
-                ,ft.CupertinoTextField(
+                ft.Text(
+                    "Reps: ".capitalize(),
+                    color="#e6e6e6",
+                    size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
+                ft.CupertinoTextField(
                     width=100,
                     text_style=ft.TextStyle(size=14, color="#e6e6e6", font_family="Roboto Mono", letter_spacing=1.5),
+                    input_filter=ft.NumbersOnlyInputFilter(),
                     capitalization=ft.TextCapitalization.CHARACTERS,
                     max_length=30, max_lines=1, text_align=ft.TextAlign.LEFT,
                     bgcolor="#4f4e4e",
@@ -106,12 +192,14 @@ class TrainingsAddPage:
 
         trainings_add_modal_time = ft.Row(
             [
-                ft.Text("Time (mm:ss): ",
-                        color="#e6e6e6",
-                        size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT)
-                ,ft.CupertinoTextField(
+                ft.Text(
+                    "Time (seconds): ".capitalize(),
+                    color="#e6e6e6",
+                    size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
+                ft.CupertinoTextField(
                     width=100,
                     text_style=ft.TextStyle(size=14, color="#e6e6e6", font_family="Roboto Mono", letter_spacing=1.5),
+                    input_filter=ft.NumbersOnlyInputFilter(),
                     capitalization=ft.TextCapitalization.CHARACTERS,
                     max_length=30, max_lines=1, text_align=ft.TextAlign.LEFT,
                     bgcolor="#4f4e4e",
@@ -124,8 +212,7 @@ class TrainingsAddPage:
             visible=False
         )
 
-        trainings_add_modal_time_input = None
-        trainings_add_modal_content = ft.Column(controls=[trainings_add_modal_content_type, trainings_add_modal_sets, trainings_add_modal_reps, trainings_add_modal_time])
+        trainings_add_modal_content = ft.Column(controls=[trainings_add_modal_exercise, trainings_add_modal_type, trainings_add_modal_sets, trainings_add_modal_reps, trainings_add_modal_time])
 
         trainings_add_modal_actions = [
             ft.CupertinoDialogAction(

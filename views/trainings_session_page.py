@@ -32,7 +32,7 @@ class TrainingsSessionPage:
         session_list = ft.Container(ft.Column(controls=session_exercises_items,
                                               spacing=10,
                                               alignment=ft.MainAxisAlignment.START,
-                                              horizontal_alignment=ft.CrossAxisAlignment.END),
+                                              horizontal_alignment=ft.CrossAxisAlignment.CENTER),
                                     padding=10)
 
         self.trainings_session_view = ft.View(f"/trainings/{self.session_title}", [trainings_top, session_list],
