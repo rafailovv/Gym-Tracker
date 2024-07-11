@@ -48,7 +48,7 @@ class TrainingPage:
     
 
     def _create_training_card(self, title, src, plus=False):
-        training_card_image = ft.Image(src=src,
+        training_card_image = ft.Image(src=src if src else "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Plus_symbol.svg/1200px-Plus_symbol.svg.png",
                                        width=150, height=70,
                                        fit=ft.ImageFit.CONTAIN)
         training_card_text = ft.Text(value=title,

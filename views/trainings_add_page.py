@@ -5,29 +5,40 @@ class TrainingsAddPage:
     """ Class For Addition Of Training """
 
     def __init__(self, page: ft.Page, routes={"trainings_page_route": "/trainings"}):
-        def send_data_dialog(e):
+        def add_exercise(e):
             try:
                 exercise_title = trainings_add_modal_exercise.controls[1].value
                 exercise_type = trainings_add_modal_type.controls[1].text
 
-                if exercise_type == variants[0]:
-                    sets_count = int(trainings_add_modal_sets.controls[1].value)
-                    reps_count = int(trainings_add_modal_reps.controls[1].value)
-                    exercise_repeats = f"{sets_count}X{reps_count}"
-                elif exercise_type == variants[1]:
-                    time = int(trainings_add_modal_time.controls[1].value) # TODO: Format (seconds) to (mm:ss)
-                    exercise_repeats = f"{time}"
+                if exercise_title.strip() != "":
+                    exercise_title = exercise_title.strip()
+                    if exercise_type == variants[0]:
+                        sets_count = int(trainings_add_modal_sets.controls[1].value)
+                        reps_count = int(trainings_add_modal_reps.controls[1].value)
 
-                if exercise_title != "":
-                    self.exercises.append((exercise_title, exercise_repeats))
+                        self.exercises.append({
+                            "exercise_title": exercise_title,
+                            "exercise_set_count": sets_count,
+                            "exercise_repeat_count_per_set": reps_count})
+                        
+                        exercise_item_repeats = ft.Text(
+                            f"{sets_count}X{reps_count}".upper(),
+                            color="#363636",
+                            size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER)
+                    elif exercise_type == variants[1]:
+                        time = int(trainings_add_modal_time.controls[1].value) # TODO: Format (seconds) to (mm:ss)
 
+                        self.exercises.append({
+                            "exercise_title": exercise_title,
+                            "exercise_time": time})
+                        
+                        exercise_item_repeats = ft.Text(
+                            f"{time}".upper(),
+                            color="#363636",
+                            size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER)
+                    
                     exercise_item_title = ft.Text(
                         exercise_title.capitalize(),
-                        color="#363636",
-                        size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER)
-                    
-                    exercise_item_repeats = ft.Text(
-                        exercise_repeats.upper(),
                         color="#363636",
                         size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER)
                     
@@ -38,25 +49,30 @@ class TrainingsAddPage:
                             vertical_alignment=ft.CrossAxisAlignment.CENTER),
                         padding=10,
                         border=ft.Border(top=ft.BorderSide(1, "#cdcdcd"), bottom=ft.BorderSide(1, "#cdcdcd")))
-                    
+
                     trainings_exercises_list.controls.insert(-1, exercise)
                     trainings_exercises_list.update()
+
                     e.control.page.close(trainings_add_modal)
                 else:
                     raise Exception("Title is empty")
             except:
-                selected_type = variants[0]
-                trainings_add_modal_type.controls[1].text = selected_type
-                trainings_add_modal_exercise.controls[1].value = ""
-                trainings_add_modal_sets.visible = True
-                trainings_add_modal_reps.visible = True
-                trainings_add_modal_time.visible = False
                 error = ft.CupertinoAlertDialog(title=ft.Text("ERROR!", color="#ff0000"),
                                                 actions=[ft.CupertinoDialogAction(
                                                     "Ok",
                                                     on_click=lambda e: e.control.page.close(error),
                                                 )])
                 e.control.page.open(error)
+            finally:
+                selected_type = variants[0]
+                trainings_add_modal_type.controls[1].text = selected_type
+                trainings_add_modal_exercise.controls[1].value = ""
+                trainings_add_modal_sets.visible = True
+                trainings_add_modal_sets.controls[1].value = ""
+                trainings_add_modal_reps.visible = True
+                trainings_add_modal_reps.controls[1].value = ""
+                trainings_add_modal_time.visible = False
+                trainings_add_modal_time.controls[1].value = ""
 
 
         def dismiss_dialog(e):
@@ -64,25 +80,52 @@ class TrainingsAddPage:
         
 
         def exercise_type_change(e):
+            trainings_add_modal_sets.controls[1].value = ""
+            trainings_add_modal_reps.controls[1].value = ""
+            trainings_add_modal_time.controls[1].value = ""
             if e.control.text == variants[0]:
                 selected_type = variants[1]
                 trainings_add_modal_sets.visible = False
-                trainings_add_modal_sets.controls[1].value = ""
                 trainings_add_modal_reps.visible = False
-                trainings_add_modal_reps.controls[1].value = ""
                 trainings_add_modal_time.visible = True
-                trainings_add_modal_time.controls[1].value = ""
             else:
                 selected_type = variants[0]
                 trainings_add_modal_sets.visible = True
-                trainings_add_modal_sets.controls[1].value = ""
                 trainings_add_modal_reps.visible = True
-                trainings_add_modal_reps.controls[1].value = ""
                 trainings_add_modal_time.visible = False
-                trainings_add_modal_time.controls[1].value = ""
             e.control.text = selected_type
             e.page.update()
+        
 
+        def finish_session(e):
+            session_title = trainings_add_title.value
+            if session_title.strip() != "" and self.exercises:
+                session_title = session_title.strip()
+                trainings = {}
+                if self.page.client_storage.contains_key("trainings"):
+                    trainings = self.page.client_storage.get("trainings")
+                
+                trainings[session_title] = {"src": ""}
+
+                for exercise in self.exercises:
+                    if "exercise_time" in exercise:
+                        if "time" not in trainings[session_title]:
+                            trainings[session_title]["time"] = {}
+                        trainings[session_title]["time"][exercise["exercise_title"]] = int(exercise["exercise_time"])
+                    elif "exercise_set_count" in exercise and "exercise_repeat_count_per_set" in exercise:
+                        if "sets" not in trainings[session_title]:
+                            trainings[session_title]["sets"] = {}
+                        trainings[session_title]["sets"][exercise["exercise_title"]] = {}
+                        trainings[session_title]["sets"][exercise["exercise_title"]]["set_count"] = int(exercise["exercise_set_count"])
+                        trainings[session_title]["sets"][exercise["exercise_title"]]["repeat_count_per_set"] = int(exercise["exercise_repeat_count_per_set"])
+                    
+                    if "order" not in trainings[session_title]:
+                        trainings[session_title]["order"] = []
+                    trainings[session_title]["order"].append(exercise["exercise_title"])
+                
+                self.page.client_storage.set("trainings", trainings)
+                self.page.go(self.routes["trainings_page_route"])
+                    
 
         self.page = page
         self.routes = routes
@@ -92,7 +135,7 @@ class TrainingsAddPage:
                                                      style=ft.ButtonStyle(
                                                          overlay_color="#cdcdcd"
                                                      ),
-                                                     on_click=lambda _: self.page.go(self.routes["trainings_page_route"]))
+                                                     on_click=finish_session)
         
         trainings_add_title = ft.CupertinoTextField(
             text_style=ft.TextStyle(size=25, color="#363636", font_family="Roboto Mono", letter_spacing=1.5),
@@ -218,7 +261,7 @@ class TrainingsAddPage:
             ft.CupertinoDialogAction(
                 "Yes",
                 is_destructive_action=False,
-                on_click=send_data_dialog,
+                on_click=add_exercise,
             ),
             ft.CupertinoDialogAction(
                 text="No",

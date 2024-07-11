@@ -60,9 +60,9 @@ class TrainingsSessionPage:
         
         for title in session_data["order"]:
             repeats = ""
-            if title in session_data["sets"]:
+            if "sets" in session_data and title in session_data["sets"]:
                 repeats = f"{session_data["sets"][title]["set_count"]}X{session_data["sets"][title]["repeat_count_per_set"]}"
-            elif title in session_data["time"]:
+            elif "time" in session_data and title in session_data["time"]:
                 seconds = session_data["time"][title]
 
                 minutes = seconds // 60

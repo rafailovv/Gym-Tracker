@@ -37,28 +37,25 @@ def main(page: ft.Page):
     page.update()
 
     start_page = StartPage(page)
-    start_page_view = start_page.get_view()
-
-    training_page = TrainingPage(page)
-    training_page_view = training_page.get_view()
-    training_add_page = TrainingsAddPage(page)
-    training_add_page_view = training_add_page.get_view()
 
     def route_change(route):
         page.views.clear()
-        page.views.append(start_page_view)
+        page.views.append(start_page.get_view())
 
         if page.route == "/trainings":
-            page.views.append(training_page_view)
+            training_page = TrainingPage(page)
+            training_page.page.update()
+            page.views.append(training_page.get_view())
         elif page.route == "/trainings/add":
-            page.views.append(training_add_page_view)
+            training_add_page = TrainingsAddPage(page)
+            training_add_page.page.update()
+            page.views.append(training_add_page.get_view())
         elif page.route.startswith("/trainings/"):
             session_title = page.route[11:]
             if page.client_storage.get("trainings").get(session_title, False):
                 session_data = page.client_storage.get("trainings")[session_title]
                 training_session_page = TrainingsSessionPage(page, session_title, session_data)
-                training_session_page_view = training_session_page.get_view()
-                page.views.append(training_session_page_view)
+                page.views.append(training_session_page.get_view())
 
         page.update()
     
