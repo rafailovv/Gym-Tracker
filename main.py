@@ -14,9 +14,7 @@ def main(page: ft.Page):
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
     
     page.fonts = {
-        "Roboto Mono": "https://github.com/google/fonts/raw/main/apache/robotomono/RobotoMono%5Bwght%5D.ttf",
-        "Roboto Slab": "https://github.com/google/fonts/raw/main/apache/robotoslab/RobotoSlab%5Bwght%5D.ttf",
-        "Kanit": "https://raw.githubusercontent.com/google/fonts/master/ofl/kanit/Kanit-Bold.ttf",
+        "Roboto Mono": "https://github.com/google/fonts/raw/main/apache/robotomono/RobotoMono%5Bwght%5D.ttf"
     }
     
     # Training session example
@@ -38,21 +36,22 @@ def main(page: ft.Page):
 
     start_page = StartPage(page)
 
-    def route_change(route):
+    def route_change(route) -> None:
+        """ Trigger that works then page.route changes """
+
         page.views.clear()
         page.views.append(start_page.get_view())
 
         if page.route == "/trainings":
             training_page = TrainingPage(page)
-            training_page.page.update()
             page.views.append(training_page.get_view())
         elif page.route == "/trainings/add":
             training_add_page = TrainingsAddPage(page)
-            training_add_page.page.update()
             page.views.append(training_add_page.get_view())
         elif page.route.startswith("/trainings/"):
             session_title = page.route[11:]
-            if page.client_storage.get("trainings").get(session_title, False):
+            print(session_title)
+            if page.client_storage.contains_key("trainings") and page.client_storage.get("trainings").get(session_title, False):
                 session_data = page.client_storage.get("trainings")[session_title]
                 training_session_page = TrainingsSessionPage(page, session_title, session_data)
                 page.views.append(training_session_page.get_view())
@@ -60,7 +59,9 @@ def main(page: ft.Page):
         page.update()
     
 
-    def view_pop(view):
+    def view_pop(view) -> None:
+        """ Trigger for Back """
+        
         page.views.pop()
         top_view = page.views[-1]
         page.go(top_view.route)
