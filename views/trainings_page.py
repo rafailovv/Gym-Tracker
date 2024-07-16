@@ -50,7 +50,8 @@ class TrainingPage:
         self.training_page_view = ft.View(
             "/trainings",
             [back_button, main_text, training_cards_grid],
-            bgcolor="#ffffff")
+            bgcolor="#ffffff",
+            scroll=ft.ScrollMode.ADAPTIVE)
     
 
     def _create_training_card(self, title: str, src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Plus_symbol.svg/1200px-Plus_symbol.svg.png", plus=True) -> ft.Container: # Plus url

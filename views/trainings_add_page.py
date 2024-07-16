@@ -112,6 +112,8 @@ class TrainingsAddPage:
 
             session_title = trainings_add_title.value
             session_title = session_title.capitalize()
+            session_image_src = selected_photo.src
+
             if session_title.strip() != "" and self.exercises:
                 session_title = session_title.strip()
 
@@ -119,7 +121,8 @@ class TrainingsAddPage:
                 if self.page.client_storage.contains_key("trainings"):
                     trainings = self.page.client_storage.get("trainings")
                 
-                trainings[session_title] = {} # TODO: Add photo
+                trainings[session_title] = {}
+                trainings[session_title]["src"] = session_image_src
 
                 for exercise in self.exercises:
                     if "exercise_time" in exercise:
@@ -142,7 +145,21 @@ class TrainingsAddPage:
                 
                 self.page.client_storage.set("trainings", trainings)
                 self.page.go(self.routes["trainings_page_route"])
-                    
+
+        
+        def image_pick_result(e):
+            """ Set image picker photo """
+            if e.files:
+                selected_photo.src = e.files[0].path
+            selected_photo.update()
+        
+        
+        def image_pick_set_default(e):
+            """ Sets image in photo picker to default """
+
+            selected_photo.src = "https://upload.wikimedia.org/wikipedia/commons/1/18/Color-white.JPG"
+            selected_photo.update()
+
 
         self.page = page
         self.routes = routes
@@ -289,11 +306,45 @@ class TrainingsAddPage:
                 color="#e6e6e6", size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
             content=trainings_add_modal_content,
             actions=trainings_add_modal_actions)
+        
+        trainings_session_image_picker = ft.FilePicker(
+            on_result=image_pick_result)
+        self.page.overlay.append(trainings_session_image_picker)
+        
+        trainings_session_image_picker_pick_button = ft.TextButton(
+            content=ft.Text(
+                "Pick image".capitalize(),
+                color="#363636", size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER),
+            style=ft.ButtonStyle(overlay_color="#cdcdcd"),
+            on_click=lambda _: trainings_session_image_picker.pick_files(
+                file_type=ft.FilePickerFileType.IMAGE))
+        
+        trainings_session_image_picker_default_button = ft.TextButton(
+            content=ft.Text(
+                "Set default".capitalize(),
+                color="#363636", size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER),
+            style=ft.ButtonStyle(overlay_color="#cdcdcd"),
+            on_click=image_pick_set_default)
+        
+        trainings_session_image_picker_buttons = ft.Row(
+            [trainings_session_image_picker_pick_button, trainings_session_image_picker_default_button],
+            alignment=ft.MainAxisAlignment.CENTER,
+            vertical_alignment=ft.MainAxisAlignment.START)
+        
+        selected_photo = ft.Image(
+            src="https://upload.wikimedia.org/wikipedia/commons/1/18/Color-white.JPG",
+            width=300,
+            height=140,
+            fit=ft.ImageFit.CONTAIN)
+        
+        trainings_image_picker = ft.Column(
+            [selected_photo, trainings_session_image_picker_buttons],
+            alignment=ft.MainAxisAlignment.START,
+            horizontal_alignment=ft.CrossAxisAlignment.STRETCH)
 
         trainings_add_exercise_button = ft.IconButton(
             icon=ft.icons.ADD_CIRCLE_OUTLINE, icon_color="#363636", icon_size=40,
-            style=ft.ButtonStyle(
-                overlay_color="#cdcdcd"),
+            style=ft.ButtonStyle(overlay_color="#cdcdcd"),
             on_click=lambda e: e.control.page.open(trainings_add_modal))
 
         trainings_exercises_list = ft.Column(
@@ -302,8 +353,9 @@ class TrainingsAddPage:
         
         self.trainings_add_view = ft.View(
             "/trainings/add",
-            [trainings_add_top, trainings_exercises_list],
-            bgcolor="#ffffff")
+            [trainings_add_top, trainings_image_picker, trainings_exercises_list],
+            bgcolor="#ffffff",
+            scroll=ft.ScrollMode.ADAPTIVE)
         
 
     def get_view(self):

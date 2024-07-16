@@ -40,7 +40,8 @@ class TrainingsSessionPage:
         self.trainings_session_view = ft.View(
             f"/trainings/{self.session_title}",
             [trainings_top, session_list],
-            bgcolor="#ffffff")
+            bgcolor="#ffffff",
+            scroll=ft.ScrollMode.ADAPTIVE)
     
 
     def _create_exercise_item(self, title: str, repeats: str) -> ft.Container:
