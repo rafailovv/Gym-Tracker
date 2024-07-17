@@ -50,7 +50,6 @@ def main(page: ft.Page):
             page.views.append(training_add_page.get_view())
         elif page.route.startswith("/trainings/"):
             session_title = page.route[11:]
-            print(session_title)
             if page.client_storage.contains_key("trainings") and page.client_storage.get("trainings").get(session_title, False):
                 session_data = page.client_storage.get("trainings")[session_title]
                 training_session_page = TrainingsSessionPage(page, session_title, session_data)
