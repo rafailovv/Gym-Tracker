@@ -166,10 +166,15 @@ class TrainingsAddPage:
         self.exercises = []
 
         trainings_add_confirm_button = ft.IconButton(
-            icon=ft.icons.CHECK_CIRCLE_OUTLINE, icon_color="#515151", icon_size=25,
-            style=ft.ButtonStyle(
-                overlay_color="#cdcdcd"),
+            icon=ft.icons.CHECK_OUTLINED, icon_color="#515151", icon_size=25,
+            style=ft.ButtonStyle(overlay_color="#cdcdcd"),
             on_click=finish_session)
+        
+        trainings_back_button = ft.IconButton(
+            icon=ft.icons.ARROW_BACK_OUTLINED, icon_color="#515151", icon_size=25,
+            style=ft.ButtonStyle(overlay_color="#cdcdcd"),
+            on_click=lambda _: self.page.go(self.routes["trainings_page_route"])
+        )
         
         trainings_add_title = ft.CupertinoTextField(
             text_style=ft.TextStyle(size=25, color="#363636", font_family="Roboto Mono", letter_spacing=1.5),
@@ -187,7 +192,7 @@ class TrainingsAddPage:
         
         trainings_add_top = ft.SafeArea(
             ft.Row(
-                [trainings_add_title, trainings_add_confirm_button],
+                [trainings_add_title, trainings_back_button, trainings_add_confirm_button],
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN, vertical_alignment=ft.CrossAxisAlignment.CENTER))
 
         variants = ["Set X Reps", "Time"]
