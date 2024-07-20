@@ -59,7 +59,7 @@ class TrainingsAddPage:
             except:
                 error = ft.CupertinoAlertDialog(
                     title=ft.Text(
-                        "ERROR!",
+                        "Error!",
                         color="#ff0000"),
                     actions=
                         [ft.CupertinoDialogAction(
@@ -145,10 +145,37 @@ class TrainingsAddPage:
                 
                 self.page.client_storage.set("trainings", trainings)
                 self.page.go(self.routes["trainings_page_route"])
-
         
+
+        def change_title_text_field(e):
+            """ Checks uniqueness of textfield value """
+
+            if self.page.client_storage.contains_key("trainings") and trainings_add_title.value in self.page.client_storage.get("trainings"):
+
+                error = ft.CupertinoAlertDialog(
+                    title=ft.Text(
+                        "Error!",
+                        color="#ff0000"),
+                    content=ft.Text(
+                        "This training title already exists!",
+                        color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
+                    actions=
+                        [ft.CupertinoDialogAction(
+                            "Ok",
+                            on_click=lambda e: e.control.page.close(error))])
+
+                trainings_add_confirm_button.on_click = lambda e: e.control.page.open(error)
+                trainings_add_confirm_button.icon_color = "#ebebe4"
+            else:
+                trainings_add_confirm_button.on_click = finish_session
+                trainings_add_confirm_button.icon_color = "#515151"
+            
+            trainings_add_confirm_button.update()
+        
+
         def image_pick_result(e):
             """ Set image picker photo """
+
             if e.files:
                 selected_photo.src = e.files[0].path
             selected_photo.update()
@@ -173,8 +200,7 @@ class TrainingsAddPage:
         trainings_back_button = ft.IconButton(
             icon=ft.icons.ARROW_BACK_OUTLINED, icon_color="#515151", icon_size=25,
             style=ft.ButtonStyle(overlay_color="#cdcdcd"),
-            on_click=lambda _: self.page.go(self.routes["trainings_page_route"])
-        )
+            on_click=lambda _: self.page.go(self.routes["trainings_page_route"]))
         
         trainings_add_title = ft.CupertinoTextField(
             text_style=ft.TextStyle(size=25, color="#363636", font_family="Roboto Mono", letter_spacing=1.5),
@@ -188,7 +214,8 @@ class TrainingsAddPage:
             focused_border_width=0.75,
             placeholder_text="Training Title".upper(),
             placeholder_style=ft.TextStyle(size=25, color="#cdcdcd", font_family="Roboto Mono"),
-            cursor_color="#cdcdcd")
+            cursor_color="#cdcdcd",
+            on_change=change_title_text_field)
         
         trainings_add_top = ft.SafeArea(
             ft.Row(
@@ -213,7 +240,7 @@ class TrainingsAddPage:
                 border=ft.Border(ft.BorderSide(0.75, "#515151"), ft.BorderSide(0.75, "#515151"), ft.BorderSide(0.75, "#515151"), ft.BorderSide(0.75, "#515151")),
                 focused_border_color="#363636",
                 focused_border_width=0.75,
-                cursor_color="#cdcdcd",)],
+                cursor_color="#cdcdcd")],
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             visible=True)
 
