@@ -9,62 +9,74 @@ class TrainingsAddPage:
             """ Addings exercise to training session logic """
 
             try:
-                exercise_title = trainings_add_modal_exercise.controls[1].value
+                exercise_title = trainings_add_modal_exercise.controls[1].value.strip()
                 exercise_type = trainings_add_modal_type.controls[1].text
 
-                if exercise_title.strip() != "":
-                    exercise_title = exercise_title.strip()
+                if exercise_title == "":
+                    raise Exception("EmptyExerciseTitle")
 
-                    if exercise_type == variants[0]:
-                        sets_count = int(trainings_add_modal_sets.controls[1].value)
-                        reps_count = int(trainings_add_modal_reps.controls[1].value)
+                if exercise_type == variants[0]:
+                    sets_count = int(trainings_add_modal_sets.controls[1].value)
+                    reps_count = int(trainings_add_modal_reps.controls[1].value)
 
-                        self.exercises.append({
-                            "exercise_title": exercise_title,
-                            "exercise_set_count": sets_count,
-                            "exercise_repeat_count_per_set": reps_count})
-                        
-                        exercise_item_repeats = ft.Text(
-                            f"{sets_count}X{reps_count}".upper(),
-                            color="#363636", size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER)
-                    elif exercise_type == variants[1]:
-                        time = int(trainings_add_modal_time.controls[1].value) # TODO: Format (seconds) to (mm:ss)
-
-                        self.exercises.append({
-                            "exercise_title": exercise_title,
-                            "exercise_time": time})
-                        
-                        exercise_item_repeats = ft.Text(
-                            f"{time}".upper(),
-                            color="#363636", size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER)
+                    self.exercises.append({
+                        "exercise_title": exercise_title,
+                        "exercise_set_count": sets_count,
+                        "exercise_repeat_count_per_set": reps_count})
                     
-                    exercise_item_title = ft.Text(
-                        exercise_title.capitalize(),
+                    exercise_item_repeats = ft.Text(
+                        f"{sets_count}X{reps_count}".upper(),
                         color="#363636", size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER)
+                elif exercise_type == variants[1]:
+                    time = int(trainings_add_modal_time.controls[1].value) # TODO: Format (seconds) to (mm:ss)
+
+                    self.exercises.append({
+                        "exercise_title": exercise_title,
+                        "exercise_time": time})
                     
-                    exercise = ft.Container(
-                        ft.Row(
-                            [exercise_item_title, exercise_item_repeats],
-                            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                            vertical_alignment=ft.CrossAxisAlignment.CENTER),
-                        padding=10,
-                        border=ft.Border(top=ft.BorderSide(1, "#cdcdcd"), bottom=ft.BorderSide(1, "#cdcdcd")))
+                    exercise_item_repeats = ft.Text(
+                        f"{time}".upper(),
+                        color="#363636", size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER)
+                
+                exercise_item_title = ft.Text(
+                    exercise_title.capitalize(),
+                    color="#363636", size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER)
+                
+                exercise = ft.Container(
+                    ft.Row(
+                        [exercise_item_title, exercise_item_repeats],
+                        alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                        vertical_alignment=ft.CrossAxisAlignment.CENTER),
+                    padding=10,
+                    border=ft.Border(top=ft.BorderSide(1, "#cdcdcd"), bottom=ft.BorderSide(1, "#cdcdcd")))
 
-                    trainings_exercises_list.controls.insert(-1, exercise)
-                    trainings_exercises_list.update()
+                trainings_exercises_list.controls.insert(-1, exercise)
+                trainings_exercises_list.update()
 
-                    e.control.page.close(trainings_add_modal)
-                else:
-                    raise Exception("Title is empty")
+                e.control.page.close(trainings_add_modal)
             except:
                 error = ft.CupertinoAlertDialog(
                     title=ft.Text(
                         "Error!",
                         color="#ff0000"),
+                    content=ft.Text(
+                        "Unknown error!",
+                        color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
                     actions=
                         [ft.CupertinoDialogAction(
                             "Ok",
                             on_click=lambda e: e.control.page.close(error))])
+                
+                if exercise_title == "":
+                    error.content.value = "You can not add exercise without title!"
+                elif exercise_type == variants[0]:
+                    if trainings_add_modal_sets.controls[1].value == "":
+                        error.content.value = "You can not add exercise with 0 sets!"
+                    elif trainings_add_modal_reps.controls[1].value == "":
+                        error.content.value = "You can not add exercise with 0 repeats!"
+                elif exercise_type == variants[1]:
+                    if trainings_add_modal_time.controls[1].value == "":
+                        error.content.value = "You can not add exercise lasting 0 seconds!"
                 
                 e.control.page.open(error)
             finally:
@@ -110,16 +122,24 @@ class TrainingsAddPage:
         def finish_session(e) -> None:
             """ Ends training session creating and redirect to /trainings"""
 
-            session_title = trainings_add_title.value
-            session_title = session_title.capitalize()
-            session_image_src = selected_photo.src
+            try:
+                session_title = trainings_add_title.value.strip()
+                session_title = session_title.capitalize()
 
-            if session_title.strip() != "" and self.exercises:
-                session_title = session_title.strip()
+                if session_title == "":
+                    raise Exception("EmptySessionTitle")
+                
+                if not self.exercises:
+                    raise Exception("EmptyExercises")
+
+                session_image_src = selected_photo.src
 
                 trainings = {}
                 if self.page.client_storage.contains_key("trainings"):
                     trainings = self.page.client_storage.get("trainings")
+                
+                if session_title in trainings:
+                    raise Exception("SessionExists")
                 
                 trainings[session_title] = {}
                 trainings[session_title]["src"] = session_image_src
@@ -145,33 +165,28 @@ class TrainingsAddPage:
                 
                 self.page.client_storage.set("trainings", trainings)
                 self.page.go(self.routes["trainings_page_route"])
-        
-
-        def change_title_text_field(e):
-            """ Checks uniqueness of textfield value """
-
-            if self.page.client_storage.contains_key("trainings") and trainings_add_title.value in self.page.client_storage.get("trainings"):
-
+            except:
                 error = ft.CupertinoAlertDialog(
                     title=ft.Text(
                         "Error!",
                         color="#ff0000"),
                     content=ft.Text(
-                        "This training title already exists!",
+                        "Unknown error!",
                         color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
                     actions=
                         [ft.CupertinoDialogAction(
                             "Ok",
                             on_click=lambda e: e.control.page.close(error))])
+                
+                if session_title == "":
+                    error.content.value = "You can not add training session with empty title!"
+                elif self.page.client_storage.contains_key("trainings") and session_title in self.page.client_storage.get("trainings"):
+                    error.content.value = "Training session with this title already exists!"
+                elif not self.exercises:
+                    error.content.value = "You can not add empty training session!"
 
-                trainings_add_confirm_button.on_click = lambda e: e.control.page.open(error)
-                trainings_add_confirm_button.icon_color = "#ebebe4"
-            else:
-                trainings_add_confirm_button.on_click = finish_session
-                trainings_add_confirm_button.icon_color = "#515151"
-            
-            trainings_add_confirm_button.update()
-        
+                e.control.page.open(error)
+                
 
         def image_pick_result(e):
             """ Set image picker photo """
@@ -214,8 +229,7 @@ class TrainingsAddPage:
             focused_border_width=0.75,
             placeholder_text="Training Title".upper(),
             placeholder_style=ft.TextStyle(size=25, color="#cdcdcd", font_family="Roboto Mono"),
-            cursor_color="#cdcdcd",
-            on_change=change_title_text_field)
+            cursor_color="#cdcdcd")
         
         trainings_add_top = ft.SafeArea(
             ft.Row(
@@ -322,12 +336,12 @@ class TrainingsAddPage:
 
         trainings_add_modal_actions = [
             ft.CupertinoDialogAction(
-                "Yes",
+                "Add",
                 is_destructive_action=False,
                 on_click=add_exercise,
             ),
             ft.CupertinoDialogAction(
-                text="No",
+                text="Cancel",
                 is_destructive_action=True,
                 on_click=dismiss_dialog,
             )]
