@@ -4,7 +4,9 @@ import flet as ft
 class TrainingsAddPage:
     """ Class For Addition Of Training """
 
-    def __init__(self, page: ft.Page, routes={"trainings_page_route": "/trainings"}) -> None:
+    def __init__(self, page: ft.Page,
+                 lang="en",
+                 routes={"trainings_page_route": "/trainings"}) -> None:
         def add_exercise(e) -> None:
             """ Addings exercise to training session logic """
 
@@ -207,6 +209,11 @@ class TrainingsAddPage:
         self.routes = routes
         self.exercises = []
 
+        if lang == "en":
+            import langs.en as text
+        elif lang == "ru":
+            import langs.ru as text
+
         trainings_add_confirm_button = ft.IconButton(
             icon=ft.icons.CHECK_OUTLINED, icon_color="#515151", icon_size=25,
             style=ft.ButtonStyle(overlay_color="#cdcdcd"),
@@ -227,7 +234,7 @@ class TrainingsAddPage:
             border=ft.Border(ft.BorderSide(0.75, "#515151"), ft.BorderSide(0.75, "#515151"), ft.BorderSide(0.75, "#515151"), ft.BorderSide(0.75, "#515151")),
             focused_border_color="#363636",
             focused_border_width=0.75,
-            placeholder_text="Training Title".upper(),
+            placeholder_text=text.TRAININGS_ADD_PLACEHOLDER.upper(),
             placeholder_style=ft.TextStyle(size=25, color="#cdcdcd", font_family="Roboto Mono"),
             cursor_color="#cdcdcd")
         
@@ -236,12 +243,12 @@ class TrainingsAddPage:
                 [trainings_add_title, trainings_back_button, trainings_add_confirm_button],
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN, vertical_alignment=ft.CrossAxisAlignment.CENTER))
 
-        variants = ["Set X Reps", "Time"]
+        variants = [text.TRAININGS_ADD_SET_X_REP, text.TRAININGS_ADD_TIME]
         selected_type = variants[0]
 
         trainings_add_modal_exercise = ft.Row(
             [ft.Text(
-                "Exercise title: ".capitalize(),
+                text.TRAININGS_ADD_MODAL_TITLE.capitalize(),
                 color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
             ft.CupertinoTextField(
                 width=100,
@@ -260,7 +267,7 @@ class TrainingsAddPage:
 
         trainings_add_modal_type = ft.Row(
             [ft.Text(
-                "Exercise type: ".capitalize(),
+                text.TRAININGS_ADD_MODAL_TYPE.capitalize(),
                 color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
             ft.TextButton(
                 text=selected_type,
@@ -271,7 +278,7 @@ class TrainingsAddPage:
         
         trainings_add_modal_sets = ft.Row(
             [ft.Text(
-                "Sets: ".capitalize(),
+                text.TRAININGS_ADD_MODAL_SETS.capitalize(),
                 color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
             ft.CupertinoTextField(
                 width=100,
@@ -291,7 +298,7 @@ class TrainingsAddPage:
 
         trainings_add_modal_reps = ft.Row(
             [ft.Text(
-                "Reps: ".capitalize(),
+                text.TRAININGS_ADD_MODAL_REPS.capitalize(),
                 color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
                 ft.CupertinoTextField(
                     width=100,
@@ -313,7 +320,7 @@ class TrainingsAddPage:
 
         trainings_add_modal_time = ft.Row(
             [ft.Text(
-                "Time (seconds): ".capitalize(),
+                text.TRAININGS_ADD_MODAL_TIME.capitalize(),
                 color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
             ft.CupertinoTextField(
                 width=100,
@@ -336,19 +343,19 @@ class TrainingsAddPage:
 
         trainings_add_modal_actions = [
             ft.CupertinoDialogAction(
-                "Add",
+                text.TRAININGS_ADD_MODAL_ADD_BUTTON.capitalize(),
                 is_destructive_action=False,
                 on_click=add_exercise,
             ),
             ft.CupertinoDialogAction(
-                text="Cancel",
+                text.TRAININGS_ADD_MODAL_CANCEL_BUTTON.capitalize(),
                 is_destructive_action=True,
                 on_click=dismiss_dialog,
             )]
 
         trainings_add_modal = ft.CupertinoAlertDialog(
             title=ft.Text(
-                "Exercise",
+                text.TRAININGS_ADD_MODAL.capitalize(),
                 color="#e6e6e6", size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
             content=trainings_add_modal_content,
             actions=trainings_add_modal_actions)
@@ -359,7 +366,7 @@ class TrainingsAddPage:
         
         trainings_session_image_picker_pick_button = ft.TextButton(
             content=ft.Text(
-                "Pick image".capitalize(),
+                text.TRAININGS_ADD_PICK_IMAGE.capitalize(),
                 color="#363636", size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER),
             style=ft.ButtonStyle(overlay_color="#cdcdcd"),
             on_click=lambda _: trainings_session_image_picker.pick_files(
@@ -367,7 +374,7 @@ class TrainingsAddPage:
         
         trainings_session_image_picker_default_button = ft.TextButton(
             content=ft.Text(
-                "Set default".capitalize(),
+                text.TRAININGS_ADD_SET_DEFAULT_IMAGE.capitalize(),
                 color="#363636", size=20, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER),
             style=ft.ButtonStyle(overlay_color="#cdcdcd"),
             on_click=image_pick_set_default)

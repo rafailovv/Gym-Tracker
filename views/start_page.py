@@ -4,22 +4,29 @@ import flet as ft
 class StartPage:
     """ Class For Start Page View Usage """
 
-    def __init__(self, page: ft.Page, routes={"trainings_page_route": "/trainings",
-                                     "settings_page_route": "/settings"}) -> None:
+    def __init__(self, page: ft.Page,
+                 lang="en",
+                 routes={"trainings_page_route": "/trainings",
+                         "settings_page_route": "/settings"}) -> None:
         self.page = page
         self.routes = routes
+
+        if lang == "en":
+            import langs.en as text
+        elif lang == "ru":
+            import langs.ru as text
 
         main_text = ft.SafeArea(
             ft.Container(
                 ft.Text(
-                    "Have a good training session!".upper(),
+                    text.START_GREETINGS.upper(),
                     color='#363636', size=20, weight=ft.FontWeight.BOLD, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER),
                 alignment=ft.alignment.center))
         
         
         start_button = ft.OutlinedButton(
             content=ft.Text(
-                "Start".upper(),
+                text.START_START_BUTTON.upper(),
                 size=16, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER),
             width=200, height=30,
             style=ft.ButtonStyle(
@@ -34,7 +41,7 @@ class StartPage:
         
         settings_button = ft.OutlinedButton(
             content=ft.Text(
-                "Settings".upper(),
+                text.START_SETTING_BUTTON.upper(),
                 size=16, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER),
             width=200, height=30,
             style=ft.ButtonStyle(

@@ -34,7 +34,8 @@ def main(page: ft.Page):
                                         })
     page.update()
 
-    start_page = StartPage(page)
+
+    start_page = StartPage(page, lang="ru")
 
     def route_change(route) -> None:
         """ Trigger that works then page.route changes """
@@ -43,10 +44,10 @@ def main(page: ft.Page):
         page.views.append(start_page.get_view())
 
         if page.route == "/trainings":
-            training_page = TrainingPage(page)
+            training_page = TrainingPage(page, lang="ru")
             page.views.append(training_page.get_view())
         elif page.route == "/trainings/add":
-            training_add_page = TrainingsAddPage(page)
+            training_add_page = TrainingsAddPage(page, lang="ru")
             page.views.append(training_add_page.get_view())
         elif page.route.startswith("/trainings/"):
             session_title = page.route[11:]
