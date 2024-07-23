@@ -5,16 +5,14 @@ class TrainingPage:
     """ Class For Training Page View Usage """
 
     def __init__(self, page: ft.Page,
-                 lang="en",
+                 settings,
                  routes={"trainings_add_page_route": "/trainings/add",
                          "trainings_session_page_route": "/trainings/"}) -> None:
         self.page = page
         self.routes = routes
+        self.settings = settings
 
-        if lang == "en":
-            import langs.en as text
-        elif lang == "ru":
-            import langs.ru as text
+        lang_preset = self.settings.lang_preset
         
         back_button = ft.SafeArea(
             ft.Container(
@@ -29,7 +27,7 @@ class TrainingPage:
         main_text = ft.SafeArea(
             ft.Container(
                 ft.Text(
-                    text.TRAININGS_HEADER.upper(),
+                    lang_preset["TRAININGS_HEADER"].upper(),
                     color='#363636', size=20, weight=ft.FontWeight.BOLD, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER),
                 alignment=ft.alignment.center))
 
@@ -50,7 +48,7 @@ class TrainingPage:
             else:
                 training_cards.append(self._create_training_card(training_title, plus=False))
 
-        plus_card = self._create_training_card(text.TRAININGS_ADD_TRAINING) # Plus url
+        plus_card = self._create_training_card(lang_preset["TRAININGS_ADD_TRAINING"]) # Plus url
         training_cards.append(plus_card)
         training_cards_grid.controls = training_cards
          

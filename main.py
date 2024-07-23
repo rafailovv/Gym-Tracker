@@ -4,6 +4,9 @@ from views.start_page import StartPage
 from views.trainings_page import TrainingPage
 from views.trainings_add_page import TrainingsAddPage
 from views.trainings_session_page import TrainingsSessionPage
+from views.settings_page import SettingsPage
+
+from settings import Setting
 
 
 def main(page: ft.Page):
@@ -35,19 +38,25 @@ def main(page: ft.Page):
     page.update()
 
 
-    start_page = StartPage(page, lang="ru")
+    page_settings = Setting(params=
+                            {"lang": "en"})
 
     def route_change(route) -> None:
         """ Trigger that works then page.route changes """
+        
+        start_page = StartPage(page, page_settings)
 
         page.views.clear()
         page.views.append(start_page.get_view())
 
         if page.route == "/trainings":
-            training_page = TrainingPage(page, lang="ru")
+            training_page = TrainingPage(page, page_settings)
             page.views.append(training_page.get_view())
+        elif page.route == "/settings":
+            setting_page = SettingsPage(page, page_settings)
+            page.views.append(setting_page.get_view())
         elif page.route == "/trainings/add":
-            training_add_page = TrainingsAddPage(page, lang="ru")
+            training_add_page = TrainingsAddPage(page, page_settings)
             page.views.append(training_add_page.get_view())
         elif page.route.startswith("/trainings/"):
             session_title = page.route[11:]
