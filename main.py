@@ -39,7 +39,7 @@ def main(page: ft.Page):
 
 
     page_settings = Setting(params=
-                            {"lang": "en"})
+                            {"lang": "ru"})
 
     def route_change(route) -> None:
         """ Trigger that works then page.route changes """

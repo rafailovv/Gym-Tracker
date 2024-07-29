@@ -72,7 +72,7 @@ class TrainingPage:
         training_card_text = ft.Text(
             title,
             width=150,
-            color="#515151", size=16, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER)
+            color="#515151", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER)
 
         training_card_content = ft.Column(
             [training_card_image, training_card_text],

@@ -247,7 +247,7 @@ class TrainingsAddPage:
         trainings_add_modal_exercise = ft.Row(
             [ft.Text(
                 lang_preset["TRAININGS_ADD_MODAL_TITLE"].capitalize(),
-                color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
+                width=100, color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
             ft.CupertinoTextField(
                 width=100,
                 text_style=ft.TextStyle(size=14, color="#e6e6e6", font_family="Roboto Mono", letter_spacing=1.5),
@@ -266,10 +266,10 @@ class TrainingsAddPage:
         trainings_add_modal_type = ft.Row(
             [ft.Text(
                 lang_preset["TRAININGS_ADD_MODAL_TYPE"].capitalize(),
-                color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
+                width=100, color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
             ft.TextButton(
-                text=selected_type,
                 width=100,
+                text=selected_type,
                 on_click=exercise_type_change)],
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             visible=True)
@@ -277,7 +277,7 @@ class TrainingsAddPage:
         trainings_add_modal_sets = ft.Row(
             [ft.Text(
                 lang_preset["TRAININGS_ADD_MODAL_SETS"].capitalize(),
-                color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
+                width=100, color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
             ft.CupertinoTextField(
                 width=100,
                 text_style=ft.TextStyle(size=14, color="#e6e6e6", font_family="Roboto Mono", letter_spacing=1.5),
@@ -297,7 +297,7 @@ class TrainingsAddPage:
         trainings_add_modal_reps = ft.Row(
             [ft.Text(
                 lang_preset["TRAININGS_ADD_MODAL_REPS"].capitalize(),
-                color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
+                width=100, color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
                 ft.CupertinoTextField(
                     width=100,
                     text_style=ft.TextStyle(size=14, color="#e6e6e6", font_family="Roboto Mono", letter_spacing=1.5),
@@ -319,7 +319,7 @@ class TrainingsAddPage:
         trainings_add_modal_time = ft.Row(
             [ft.Text(
                 lang_preset["TRAININGS_ADD_MODAL_TIME"].capitalize(),
-                color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
+                width=100, color="#e6e6e6", size=14, weight=ft.FontWeight.NORMAL, font_family="Roboto Mono", text_align=ft.TextAlign.LEFT),
             ft.CupertinoTextField(
                 width=100,
                 text_style=ft.TextStyle(size=14, color="#e6e6e6", font_family="Roboto Mono", letter_spacing=1.5),
