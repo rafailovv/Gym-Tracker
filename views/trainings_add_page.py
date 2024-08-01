@@ -182,13 +182,57 @@ class TrainingsAddPage:
                 
                 if session_title == "":
                     error.content.value = "You can not add training session with empty title!"
-                elif self.page.client_storage.contains_key("trainings") and session_title in self.page.client_storage.get("trainings"):
-                    error.content.value = "Training session with this title already exists!"
                 elif not self.exercises:
                     error.content.value = "You can not add empty training session!"
-
+                elif self.page.client_storage.contains_key("trainings") and session_title in self.page.client_storage.get("trainings"):
+                    error.content.value = "Training session with this title already exists!"
+                    error.actions = [
+                        ft.CupertinoDialogAction(
+                            "Change name",
+                            is_default_action=True,
+                            on_click=lambda e: e.control.page.close(error)),
+                        ft.CupertinoDialogAction(
+                            "Rewrite session",
+                            is_destructive_action=True,
+                            on_click=rewrite_session)]
                 e.control.page.open(error)
+
+
+        def rewrite_session(e):
+            session_title = trainings_add_title.value.strip()
+            session_title = session_title.capitalize()
+
+            session_image_src = selected_photo.src
+
+            trainings = {}
+            if self.page.client_storage.contains_key("trainings"):
+                trainings = self.page.client_storage.get("trainings")
+            
+            trainings[session_title] = {}
+            trainings[session_title]["src"] = session_image_src
+
+            for exercise in self.exercises:
+                if "exercise_time" in exercise:
+                    if "time" not in trainings[session_title]:
+                        trainings[session_title]["time"] = {}
+
+                    trainings[session_title]["time"][exercise["exercise_title"]] = int(exercise["exercise_time"])
+                elif "exercise_set_count" in exercise and "exercise_repeat_count_per_set" in exercise:
+                    if "sets" not in trainings[session_title]:
+                        trainings[session_title]["sets"] = {}
+
+                    trainings[session_title]["sets"][exercise["exercise_title"]] = {}
+                    trainings[session_title]["sets"][exercise["exercise_title"]]["set_count"] = int(exercise["exercise_set_count"])
+                    trainings[session_title]["sets"][exercise["exercise_title"]]["repeat_count_per_set"] = int(exercise["exercise_repeat_count_per_set"])
                 
+                if "order" not in trainings[session_title]:
+                    trainings[session_title]["order"] = []
+
+                trainings[session_title]["order"].append(exercise["exercise_title"])
+            
+            self.page.client_storage.set("trainings", trainings)
+            self.page.go(self.routes["trainings_page_route"])
+
 
         def image_pick_result(e):
             """ Set image picker photo """
