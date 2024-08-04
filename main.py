@@ -5,6 +5,7 @@ from views.trainings_page import TrainingPage
 from views.trainings_add_page import TrainingsAddPage
 from views.trainings_session_page import TrainingsSessionPage
 from views.settings_page import SettingsPage
+from views.training_edit_page import TrainingEditPage
 
 from settings import Setting
 
@@ -39,7 +40,7 @@ def main(page: ft.Page):
 
 
     page_settings = Setting(params=
-                            {"lang": "ru"})
+                            {"lang": "en"})
 
     def route_change(route) -> None:
         """ Trigger that works then page.route changes """
@@ -58,12 +59,18 @@ def main(page: ft.Page):
         elif page.route == "/trainings/add":
             training_add_page = TrainingsAddPage(page, page_settings)
             page.views.append(training_add_page.get_view())
-        elif page.route.startswith("/trainings/"):
+        elif page.route.startswith("/trainings/") and "/edit" not in page.route[11:]:
             session_title = page.route[11:]
             if page.client_storage.contains_key("trainings") and page.client_storage.get("trainings").get(session_title, False):
                 session_data = page.client_storage.get("trainings")[session_title]
                 training_session_page = TrainingsSessionPage(page, session_title, session_data)
                 page.views.append(training_session_page.get_view())
+        elif page.route.startswith("/trainings/") and "/edit" in page.route[11:]:
+            session_title = page.route[11:-5] 
+            if page.client_storage.contains_key("trainings") and page.client_storage.get("trainings").get(session_title, False):
+                session_data = page.client_storage.get("trainings")[session_title]
+                training_edit_page = TrainingEditPage(page, session_title, session_data)
+                page.views.append(training_edit_page.get_view())
 
         page.update()
     

@@ -334,7 +334,7 @@ class TrainingsAddPage:
                 border=ft.Border(ft.BorderSide(0.75, "#515151"), ft.BorderSide(0.75, "#515151"), ft.BorderSide(0.75, "#515151"), ft.BorderSide(0.75, "#515151")),
                 focused_border_color="#363636",
                 focused_border_width=0.75,
-                cursor_color="#cdcdcd",)],
+                cursor_color="#cdcdcd")],
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             visible=True)
 

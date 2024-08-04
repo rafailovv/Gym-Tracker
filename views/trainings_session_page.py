@@ -11,6 +11,8 @@ class TrainingsSessionPage:
         self.page = page
         self.session_title = session_title
         self.session_data = session_data
+
+        routes["training_edit_route"] = f"/trainings/{self.session_title}/edit"
         self.routes = routes
         
         trainings_title = ft.Text(
@@ -23,9 +25,19 @@ class TrainingsSessionPage:
                 overlay_color="#cdcdcd"),
             on_click=lambda _: self.page.go(self.routes["trainings_page_route"]))
         
+        trainings_edit_button = ft.IconButton(
+            icon=ft.icons.EDIT_ROUNDED, icon_color="#515151", icon_size=25,
+            style=ft.ButtonStyle(
+                overlay_color="#cdcdcd"),
+            on_click=lambda _: self.page.go(self.routes["training_edit_route"]))
+        
+        trainings_buttons = ft.Row(
+            [trainings_edit_button, trainings_back_button],
+            alignment=ft.MainAxisAlignment.END, vertical_alignment=ft.CrossAxisAlignment.CENTER)
+        
         trainings_top = ft.SafeArea(
             ft.Row(
-                [trainings_title, trainings_back_button],
+                [trainings_title, trainings_buttons],
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN, vertical_alignment=ft.CrossAxisAlignment.CENTER))
 
         session_exercises = self._get_session_exercises(self.session_data)
@@ -70,6 +82,7 @@ class TrainingsSessionPage:
 
     def _get_session_exercises(self, session_data: dict) -> list:
         """ Return list with current session exercises """
+
         session = []
         
         for title in session_data["order"]:
