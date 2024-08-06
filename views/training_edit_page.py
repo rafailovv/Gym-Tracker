@@ -7,7 +7,37 @@ class TrainingEditPage():
     def __init__(self, page: ft.Page,
                  session_title: str,
                  session_data: dict,
-                 routes={}) -> None:
+                 routes={"trainings_page_route": "/trainings"}) -> None:
+        def complete_changes(e) -> None:
+            session = self.page.client_storage.get("trainings")
+            
+            if not self.session_exercises: # Empty session
+                del session[self.session_title]
+                self.page.client_storage.set("trainings", session)
+                self.page.go(self.routes["trainings_page_route"])
+                return
+            
+            session[self.session_title]["order"] = []
+            session[self.session_title]["sets"] = {}
+            session[self.session_title]["time"] = {}
+
+            for exercise in self.session_exercises:
+                exercise_info = []
+                title, *exercise_info = exercise
+                session[self.session_title]["order"].append(title)
+
+                if exercise_info[0] == "setsXreps":
+                    session[self.session_title]["sets"][title] = {
+                        "set_count": int(exercise_info[1]),
+                        "repeat_count_per_set": int(exercise_info[2])
+                    }
+                elif exercise_info[0] == "time":
+                    session[self.session_title]["time"][title] = int(exercise_info[1])
+            
+            self.page.client_storage.set("trainings", session)
+            self.page.go(self.routes["training_page"])
+
+
         self.page = page
         self.session_title = session_title
         self.session_data = session_data
@@ -23,16 +53,16 @@ class TrainingEditPage():
             icon=ft.icons.CHECK_OUTLINED, icon_color="#515151", icon_size=25,
             style=ft.ButtonStyle(
                 overlay_color="#cdcdcd"),
-            on_click=lambda _: self.page.go(self.routes["training_page"])) # Validate changing
+            on_click=complete_changes)
 
         trainings_top = ft.SafeArea(
             ft.Row(
                 [trainings_title, trainings_complete_button],
                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN, vertical_alignment=ft.CrossAxisAlignment.CENTER))
         
-        session_exercises = self._get_session_exercises(self.session_data)
+        self.session_exercises = self._get_session_exercises(self.session_data)
         session_exercises_items = []
-        for exercise in session_exercises:
+        for exercise in self.session_exercises:
             session_exercises_items.append(self._create_exercise_item(exercise))
         
         session_list = ft.Container(
@@ -67,7 +97,29 @@ class TrainingEditPage():
     
 
     def _create_exercise_item(self, exercise_data: tuple):
+        """ Creates Exercise Control """
+        def delete_exercise(exercise_title: str, exercise: ft.Container):
+            """ Trigger For Delete Button """
+            index = None
+            for i in range(len(self.session_exercises)):
+                if self.session_exercises[i][0] == exercise_title:
+                    index = i
+                    break
+            
+            if index is not None:
+                self.session_exercises.pop(i)
+            
+            exercise.disabled = True
+            exercise.visible = False
+            exercise.update()
+
+
         title, exercise_type = exercise_data[0], exercise_data[1]
+
+        delete_button = ft.IconButton(
+            icon=ft.icons.DELETE, icon_color="#515151", icon_size=25,
+            style=ft.ButtonStyle(
+                overlay_color="#cdcdcd"))
 
         if exercise_type == "setsXreps":
             sets_count, reps_count = exercise_data[2], exercise_data[3]
@@ -111,16 +163,12 @@ class TrainingEditPage():
                 cursor_color="#cdcdcd")
 
             exercise_controls = ft.Row(
-                [exercise_sets,
+                [delete_button,
+                 exercise_sets,
                  ft.Text("X",
                          color='#363636', size=20, weight=ft.FontWeight.BOLD, font_family="Roboto Mono", text_align=ft.TextAlign.CENTER),
                 exercise_reps],
                 alignment=ft.MainAxisAlignment.END,
-                vertical_alignment=ft.CrossAxisAlignment.CENTER)
-
-            exercise = ft.Row(
-                [exercise_title, exercise_controls],
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                 vertical_alignment=ft.CrossAxisAlignment.CENTER)
         elif exercise_type == "time":
             seconds = exercise_data[2]
@@ -145,16 +193,22 @@ class TrainingEditPage():
                 placeholder_text="Set count",
                 placeholder_style=ft.TextStyle(size=25, color="#cdcdcd", font_family="Roboto Mono"),
                 cursor_color="#cdcdcd")
-
-            exercise = ft.Row(
-                [exercise_title, exercise_time],
-                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+            
+            exercise_controls = ft.Row(
+                [delete_button, exercise_time],
+                alignment=ft.MainAxisAlignment.END,
                 vertical_alignment=ft.CrossAxisAlignment.CENTER)
         
+        delete_button.on_click = lambda _: delete_exercise(title, exercise)
+            
         exercise = ft.Container(
-            exercise,
+            ft.Row(
+                [exercise_title, exercise_controls],
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                vertical_alignment=ft.CrossAxisAlignment.CENTER),
             padding=10,
             border=ft.Border(top=ft.BorderSide(1, "#cdcdcd"), bottom=ft.BorderSide(1, "#cdcdcd")))
+        
         return exercise
     
     def get_view(self):

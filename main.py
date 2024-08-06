@@ -73,7 +73,7 @@ def main(page: ft.Page):
                 page.views.append(training_edit_page.get_view())
 
         page.update()
-    
+         
 
     def view_pop(view) -> None:
         """ Trigger for Back """
